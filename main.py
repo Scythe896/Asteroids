@@ -2,6 +2,7 @@
 # the open-source pygame library
 # throughout this file
 import pygame
+import sys
 from constants import *
 from player import Player
 from asteroid import Asteroid
@@ -11,6 +12,7 @@ def main():
     pygame.init()
     clock = pygame.time.Clock()
     dt = 0
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     #Groups setup
     updatable = pygame.sprite.Group()
@@ -28,17 +30,28 @@ def main():
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
 
-    # Creates black screen and draw player
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    # Main loop
     while True:
+        # Check for window exit
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
+        
         updatable.update(dt)
+        
+        # Check for collisions
+        for asteroid in asteroids:
+            if player.collision(asteroid):
+                print("Game Over!")
+                sys.exit()
+        
+        # Draw screen
         screen.fill("black")
         for obj in drawable:
             obj.draw(screen)
         pygame.display.flip()
+
+        # Limit Framerate
         dt = clock.tick(60) / 1000
 
 if __name__ == "__main__":
